@@ -1,0 +1,74 @@
+{% extends "admin/base.html" %}
+
+{% block stylesheets %}
+	{{ Assets.css("assets/css/challenge-board.scss", theme="admin") }}
+{% endblock %}
+
+{% block content %}
+
+	<div class="modal fade" id="challenge-comments-window" role="dialog">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="modal-action text-center w-100">Comments</h2>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body clearfix">
+					<div class="row">
+						<div class="col-md-12">
+							<div id="comment-box">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="jumbotron">
+		<div class="container">
+			<h1 class="text-center">{{ challenge.name }}</h1>
+			<h2 class="text-center">{{ challenge.category }}</h2>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="row">
+			<div id="metadata-update-container" class="col-md-12">
+       <form method="POST">
+        {% block metadata %}
+        <div class="form-group">
+                <label>
+                        Metadata<br>
+                        <small class="form-text text-muted">
+                                Use this to define a some metadata to a challenge.
+                        </small>
+                </label>
+                <textarea id="metadata-editor" class="form-control" name="metadata" rows="2">{{ metadata.value }}</textarea>
+        </div>
+        {% endblock %}
+        {% block submit %}
+        <div>
+                <button class="btn btn-success btn-outlined float-right" type="submit">
+                        Update
+                </button>
+        </div>
+        {% endblock %}
+       </form>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block scripts %}
+        <script>
+        var CHALLENGE_ID = {{ challenge.id }};
+        var CHALLENGE_NAME = {{ challenge.name | tojson }};
+        </script>
+        <script defer src="{{ url_for('metadata.static', filename='js/serialize.js') }}"></script>
+        <script defer src="{{ url_for('metadata.static', filename='js/metadata.js') }}"></script>
+{% endblock %}
+
