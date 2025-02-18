@@ -39,7 +39,7 @@ def load_bp():
             q=q,
             field=field,
         )
-        
+
     @plugin_bp.route('/admin/metadata/<int:challenge_id>')
     @admins_only
     def metadata_detail(challenge_id):
@@ -58,6 +58,18 @@ def load_bp():
             metadata=metadata,
         )
 
+    @plugin_bp.route("/api/v1/metadata", methods = ['GET'])
+    @admins_only
+    def metadatas_api():
+        metadata = Metadata.query.all()
+        data = []
+            for client in clients:
+                data.append(metadata.json())
+            if data:
+                return {"success": True, "data": data}
+            else:
+                return {"success": False}
+
     @plugin_bp.route("/api/v1/metadata/<int:challenge_id>", methods = ['GET', 'POST', 'DELETE', 'PATCH'])
     @admins_only
     def metadata_api(challenge_id):
@@ -66,10 +78,10 @@ def load_bp():
             if data:
                 try:
                     return {"success": True, "data": {"id": data.id,
-                                           "metadata": json.loads(data.value)}}                
+                                           "metadata": json.loads(data.value)}}
                 except:
                     return {"success": True, "data": {"id": data.id,
-                                           "metadata": data.value}}                
+                                           "metadata": data.value}}
 
             else:
                 return {"success": False}
