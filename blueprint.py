@@ -61,16 +61,13 @@ def load_bp():
     @plugin_bp.route("/api/v1/metadata", methods = ['GET'])
     @admins_only
     def metadatas_api():
-        metadata = Metadata.query.all()
+        query = Metadata.query.all()
         data = []
-            for client in clients:
-                data.append(metadata.json())
-            if data:
-                return {"success": True, "data": data}
-            else:
-                return {"success": False}
+        for metadata in query:
+            data.append(metadata.json())
+        return {"success": True, "data": data}
 
-    @plugin_bp.route("/api/v1/metadata/<int:challenge_id>", methods = ['GET', 'POST', 'DELETE', 'PATCH'])
+    @plugin_bp.route("/api/v1/metadata/<int:challenge_id>", methods = ['GET', 'DELETE', 'PATCH'])
     @admins_only
     def metadata_api(challenge_id):
         if request.method == 'GET':
@@ -96,38 +93,13 @@ def load_bp():
                 return {"success": False}, 404
         elif request.method == 'PATCH':
             data = Metadata.query.filter_by(id=challenge_id).first()
-            req = request.get_json()
             if not data:
                 # There is no metadata text for this challenge yet. Create it
-                data = Metadata(id=challenge_id, metadata="")
+                data = Metadata(id=challenge_id, value="")
                 db.session.add(data)
                 db.session.commit()
                 db.session.flush()
-            if "metadata" in req:
-                if type(req["metadata"]) == str:
-                    data.value = req["metadata"]
-                else:
-                    data.value = json.dumps(req["metadata"])
-            db.session.commit()
-            db.session.flush()
-            try:
-                return {"success": True, "data": {"id": data.id,
-                                              "metadata": json.loads(data.value)}}
-            except:
-                return {"success": True, "data": {"id": data.id,
-                                              "metadata": data.value}}
-        elif request.method == 'POST':
-            data = Metadata.query.filter_by(id=challenge_id).first()
-            req = request.get_json()
-            if data:
-                # Create element, but allow overwriting of existing elements
-                db.session.delete(data)
-            metadata = Metadata(id=challenge_id, metadata="")
-            if "metadata" in req:
-                if type(req["metadata"]) == str:
-                    data.value = req["metadata"]
-                else:
-                    data.value = json.dumps(req["metadata"])
+            data.value = request.get_data(as_text=True)
             db.session.commit()
             db.session.flush()
             try:
