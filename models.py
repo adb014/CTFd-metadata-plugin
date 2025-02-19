@@ -1,5 +1,6 @@
 from CTFd.models import db
 from CTFd.utils import get_app_config
+import json
 
 class Metadata(db.Model):
     __tablename__ = "metadata"
@@ -8,6 +9,10 @@ class Metadata(db.Model):
     value = db.Column(db.Text)
 
     def json(self):
-        return {'id': self.id,
+        try:
+            return {'id': self.id,
+                'value': json.loads(self.value)}
+        except:
+            return {'id': self.id,
                 'value': self.value}
 

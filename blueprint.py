@@ -100,6 +100,11 @@ def load_bp():
                 db.session.commit()
                 db.session.flush()
             data.value = request.get_data(as_text=True)
+            try:
+                if "metadata" in json.loads(data.value):
+                    data.value = json.dumps(json.loads(data.value)["metadata"])
+            except:
+                pass
             db.session.commit()
             db.session.flush()
             try:

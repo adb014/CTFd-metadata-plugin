@@ -22,15 +22,15 @@ $.fn.serializeJSON = function (omit_nulls) {
   values.map((x) => {
     if (omit_nulls) {
       if (x.value !== null && x.value !== "") {
-        params[x.name] = x.value;
+        try { params[x.name] = JSON.parse(x.value); } catch(e) { params[x.name] = x.value; }
       } else {
         let input = form.find(`:input[name='${x.name}']`);
         if (input.data("initial") !== input.val()) {
-          params[x.name] = x.value;
+          try { params[x.name] = JSON.parse(x.value); } catch(e) { params[x.name] = x.value; }
         }
       }
     } else {
-      params[x.name] = x.value;
+      try { params[x.name] = JSON.parse(x.value); } catch(e) { params[x.name] = x.value; }
     }
   });
   return params;
