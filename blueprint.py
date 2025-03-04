@@ -64,7 +64,10 @@ def load_bp():
         query = Metadata.query.all()
         data = []
         for metadata in query:
-            data.append(metadata.json())
+            try:
+                data.append({"id": metadata.id, "metadata": json.loads(metadata.value)})
+            except:
+                data.append({"id": metadata.id, "metadata": metadata.value})
         return {"success": True, "data": data}
 
     @plugin_bp.route("/api/v1/metadata/<int:challenge_id>", methods = ['GET', 'DELETE', 'PATCH'])
